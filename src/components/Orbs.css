@@ -1,0 +1,17 @@
+.orb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  position: absolute;
+  transition: all 0.2s ease;
+}
+
+.orb.R {
+  background-color: #ff4d4d;
+  box-shadow: 0 0 5px #ff4d4d88;
+}
+
+.orb.B {
+  background-color: #4da6ff;
+  box-shadow: 0 0 5px #4da6ff88;
+}

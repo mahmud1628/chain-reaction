@@ -65,3 +65,23 @@
 .cell:hover::before {
   opacity: 1;
 }
+
+.orb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.2s ease;
+}
+
+.orb.red {
+  background-color: #ff4d4d;
+  box-shadow: 0 0 5px #ff4d4d88;
+}
+
+.orb.blue {
+  background-color: #4da6ff;
+  box-shadow: 0 0 5px #4da6ff88;
+}
