@@ -1,25 +1,18 @@
 import "./Orbs.css";
+import { getOrbOrientation } from "./GameLogics";
 
 const Orbs = (props) => {
-  const { count, color } = props;
+  const { count, color, row, col , ROWS, COLS} = props;
+  if(typeof count !== "number" || !color) return null; // invalid props
   if (count == 0) return null; // no orbs to display
 
-  const orbPositions = {
-    1: [{ left: "50%", top: "50%" }],
-    2: [
-      { left: "25%", top: "50%" },
-      { left: "75%", top: "50%" },
-    ],
-    3: [
-      { left: "50%", top: "25%" },
-      { left: "25%", top: "75%" },
-      { left: "75%", top: "75%" },
-    ],
-  };
+  const orbPositions = getOrbOrientation(count, row, col, ROWS, COLS);
+
+  const safeCount = Math.min(count, 4); // protect against invalid count
 
   return (
     <>
-      {orbPositions[count].map((position, index) => (
+      {orbPositions[safeCount].map((position, index) => (
         <div
           key={index}
           className={`orb ${color}`}

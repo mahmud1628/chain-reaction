@@ -1,3 +1,9 @@
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+
 export const create_initial_board = (ROWS, COLS) =>
     Array.from({ length: ROWS }, () =>
       Array.from({ length: COLS }, () => ({
@@ -12,21 +18,22 @@ export const is_valid_move = (cell, current_player) => {
     return true; // Valid move if the cell is empty or occupied by the current player
 }
 
-export const update_cell = (board, row_index, col_index, current_player, ROWS, COLS) => {
+export const update_cell = async (board, row_index, col_index, current_player, ROWS, COLS, update_board, set_exploiding_cells) => {
     const new_board = [...board];
     
     new_board[row_index][col_index] = {
         count: new_board[row_index][col_index].count + 1,
         color: current_player,
     };
+    update_board(structuredClone(new_board)); // Update the board state
     if(new_board[row_index][col_index].count >= get_critical_mass(row_index, col_index, ROWS, COLS)) {
         // If the cell reaches critical mass, trigger chain explosion
-        generate_chain_explosion(new_board, row_index, col_index, current_player, ROWS, COLS);
+        await delay(150);
+        generate_chain_explosion(new_board, row_index, col_index, current_player, ROWS, COLS, update_board, set_exploiding_cells);
     }
-    return new_board;
 }
 
-const get_critical_mass = (row_index, col_index, ROWS, COLS) => {
+export const get_critical_mass = (row_index, col_index, ROWS, COLS) => {
     const upper_left_corner = row_index === 0 && col_index === 0;
     const upper_right_corner = row_index === 0 && col_index === COLS - 1;
     const lower_left_corner = row_index === ROWS - 1 && col_index === 0;
@@ -49,12 +56,16 @@ const get_critical_mass = (row_index, col_index, ROWS, COLS) => {
 }
 
 
-export const generate_chain_explosion = (board, row_index, col_index, current_player, ROWS, COLS) => {
-    const queue = [[row_index, col_index]];
+export const generate_chain_explosion = async (board, row_index, col_index, current_player, ROWS, COLS, update_board, set_exploiding_cells) => {
+    const cells_to_expand = [[row_index, col_index]];
 
-    while(queue.length > 0) {
-        const [current_row, current_col] = queue.shift();
+    while(cells_to_expand.length > 0) {
+        const [current_row, current_col] = cells_to_expand.shift();
         const cell = board[current_row][current_col];
+
+        set_exploiding_cells([[current_row, current_col]]);
+        await delay(450); // wait to let animation play
+        set_exploiding_cells([]);
 
         cell.count = 0; // Reset the cell count to 0
         cell.color = null; // Reset the cell color
@@ -72,9 +83,94 @@ export const generate_chain_explosion = (board, row_index, col_index, current_pl
 
             next_cell.count += 1; // Increment the count of the orthogonal cell
             next_cell.color = current_player; // Set the color of the orthogonal cell to the current player
+            update_board(board); // Update the board state
             if(next_cell.count >= get_critical_mass(next_row, next_col, ROWS, COLS)) {
-                queue.push([next_row, next_col]); // Add the orthogonal cell to the queue for further processing
+                cells_to_expand.push([next_row, next_col]); // Add the orthogonal cell to the cells_to_expand for further processing
             }
         }
     }
+
+    return board; // Return the updated board after chain explosion
+}
+
+
+export const getOrbOrientation = (count,row, col, ROWS, COLS) => {
+    const defaultPositions = {
+        1: [{ left: "50%", top: "50%" }],
+        2: [
+        { left: "25%", top: "50%" },
+        { left: "75%", top: "50%" },
+        ],
+        3: [
+        { left: "50%", top: "25%" },
+        { left: "25%", top: "75%" },
+        { left: "75%", top: "75%" },
+        ],
+        4: [
+        { left: "50%", top: "20%" },
+        { left: "20%", top: "50%" },
+        { left: "80%", top: "50%" },
+        { left: "50%", top: "80%" },
+        ],
+    };
+
+    if(count === 2) {
+        if(row === 0 && col === 0) {
+            defaultPositions[2] = [
+                { left: "75%", top: "50%" },
+                { left: "50%", top: "75%" },
+            ];
+        }
+        else if(row === 0 && col === COLS - 1) {
+            defaultPositions[2] = [
+                { left: "25%", top: "50%" },
+                { left: "50%", top: "75%" },
+            ];
+        }
+        else if(row === ROWS - 1 && col === 0) {
+            defaultPositions[2] = [
+                { left: "75%", top: "50%" },
+                { left: "50%", top: "25%" },
+            ];
+        }
+        else if(row === ROWS - 1 && col === COLS - 1) {
+            defaultPositions[2] = [
+                { left: "25%", top: "50%" },
+                { left: "50%", top: "25%" },
+            ];
+        }
+    }
+
+    if(count === 3) {
+        if(row === 0) {
+            defaultPositions[3] = [
+                { left: "25%", top: "25%" },
+                { left: "75%", top: "25%" },
+                { left: "50%", top: "75%" },
+            ];
+        }
+        else if(row === ROWS - 1) {
+            defaultPositions[3] = [
+                { left: "25%", top: "75%" },
+                { left: "75%", top: "75%" },
+                { left: "50%", top: "25%" },
+            ];
+        }
+        else if(col === 0) {
+            defaultPositions[3] = [
+                { left: "25%", top: "75%" },
+                { left: "75%", top: "50%" },
+                { left: "25%", top: "25%" },
+            ];
+        }
+        else if(col === COLS - 1) {
+            defaultPositions[3] = [
+                { left: "25%", top: "50%" },
+                { left: "75%", top: "75%" },
+                { left: "75%", top: "25%" },
+            ];
+        }
+    }
+
+    return defaultPositions;
 }
