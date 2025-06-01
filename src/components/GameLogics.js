@@ -33,21 +33,24 @@ export const update_cell = async (
   update_board,
   set_exploiding_cells
 ) => {
-  const new_board = [...board];
+  const updated_board = [...board];
 
-  new_board[row_index][col_index] = {
-    count: new_board[row_index][col_index].count + 1,
+  let count = updated_board[row_index][col_index].count;
+  count += 1; // Increment the count of orbs in the cell
+  updated_board[row_index][col_index] = {
+    count: count, // set the new count
     color: current_player,
   };
-  update_board(structuredClone(new_board)); // Update the board state
-  if (
-    new_board[row_index][col_index].count >=
-    get_critical_mass(row_index, col_index, ROWS, COLS)
-  ) {
+
+  update_board(structuredClone(updated_board)); // Update the board state after incrementing orb count
+
+  let critical_mass = get_critical_mass(row_index, col_index, ROWS, COLS);
+
+  if (count >= critical_mass) {
     // If the cell reaches critical mass, trigger chain explosion
     await delay(150);
     generate_chain_explosion(
-      new_board,
+      updated_board,
       row_index,
       col_index,
       current_player,
