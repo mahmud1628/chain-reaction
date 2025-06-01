@@ -58,7 +58,7 @@ const GameBoard = () => {
                 explodingCells.some(
                   ([r, c]) => r === rowIndex && c === colIndex
                 )
-                  ? "ripple"
+                  ? "pulse"
                   : ""
               }`}
               onClick={() => handleCellClick(rowIndex, colIndex)}
