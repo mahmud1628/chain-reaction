@@ -99,16 +99,16 @@ export const generate_chain_explosion = async (
   update_board,
   set_exploiding_cells
 ) => {
-  let current_exploding_cells = [[start_row, start_col]];
+  let indices_of_current_exploding_cells = [[start_row, start_col]];
 
-  while (current_exploding_cells.length > 0) {
-    const next_exploding_cells = [];
+  while (indices_of_current_exploding_cells.length > 0) {
 
-    set_exploiding_cells(current_exploding_cells);
+    set_exploiding_cells(indices_of_current_exploding_cells);
     await delay(250); // for animation of the explosion
     set_exploiding_cells([]);
 
-    for (const [row, col] of current_exploding_cells) {
+    for (const index of indices_of_current_exploding_cells) {
+      const [row, col] = index;
       const cell = board[row][col];
       cell.count = 0;
       cell.color = null;
@@ -116,35 +116,46 @@ export const generate_chain_explosion = async (
 
     update_board(structuredClone(board)); // all the exploiding cells will explode in the same time now
 
-    for (const [row, col] of current_exploding_cells) {
-      const orthogonal_orbs = [
+    let indices_of_next_exploding_cells = []; // to store the indices of cells that will explode next
+
+    for (const index of indices_of_current_exploding_cells) {
+      const [row, col] = index;
+      const indices_of_orthogonal_cells = [
         [row - 1, col],
         [row + 1, col],
         [row, col - 1],
         [row, col + 1],
       ];
 
-      for (const [orthogonal_row_index, orthogonal_col_index] of orthogonal_orbs) {
-        if (orthogonal_row_index >= 0 && orthogonal_row_index < ROWS && orthogonal_col_index >= 0 && orthogonal_col_index < COLS) {
-          const orthogonal_orb = board[orthogonal_row_index][orthogonal_col_index];
-          orthogonal_orb.count += 1;
-          orthogonal_orb.color = current_player;
+      for (const orthogonal_index of indices_of_orthogonal_cells) {
+        const [orthogonal_row_index, orthogonal_col_index] = orthogonal_index;
 
-          const critical_mass = get_critical_mass(orthogonal_row_index, orthogonal_col_index, ROWS, COLS);
+        const is_valid_row = orthogonal_row_index >= 0 && orthogonal_row_index < ROWS;
+        const is_valid_col = orthogonal_col_index >= 0 && orthogonal_col_index < COLS;
+        const is_valid_cell = is_valid_row && is_valid_col;
 
-          if (
-            orthogonal_orb.count >= critical_mass &&
-            !next_exploding_cells.some(([r, c]) => r === orthogonal_row_index && c === orthogonal_col_index)
-          ) {
-            next_exploding_cells.push([orthogonal_row_index, orthogonal_col_index]);
-          }
+        if(!is_valid_cell) continue; // skip if the cell is out of bounds
+
+        
+        const orthogonal_cell = board[orthogonal_row_index][orthogonal_col_index];
+        orthogonal_cell.count += 1;
+        orthogonal_cell.color = current_player;
+
+        const critical_mass = get_critical_mass(orthogonal_row_index, orthogonal_col_index, ROWS, COLS);
+        const is_critical_mass = orthogonal_cell.count >= critical_mass;
+
+        const is_already_exploding = indices_of_next_exploding_cells.some(([r, c]) => r === orthogonal_row_index && c === orthogonal_col_index);
+
+        if (is_critical_mass && !is_already_exploding) {
+            indices_of_next_exploding_cells.push([orthogonal_row_index, orthogonal_col_index]);
         }
+
       }
     }
 
     update_board(structuredClone(board));
-    await delay(100); // small delay before next wave
-    current_exploding_cells = next_exploding_cells;
+    await delay(100); // small delay before next explosion
+    indices_of_current_exploding_cells = indices_of_next_exploding_cells;
   }
 };
 
