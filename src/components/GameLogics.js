@@ -18,8 +18,9 @@ export const create_initial_board = (ROWS, COLS) => {
 };
 
 export const is_valid_move = (cell, current_player) => {
-  if (cell.color !== null && cell.color !== current_player) return false; // Cannot place orb in a cell occupied by the opponent
-  return true; // Valid move if the cell is empty or occupied by the current player
+    if(cell.color === null) return true; // valid moce if the cell is empty
+    if(cell.color === current_player) return true; // valid move if the cell is occupied by the current player
+    return false; // invalid move if the cell is occupied by the opponent already
 };
 
 export const update_cell = async (
