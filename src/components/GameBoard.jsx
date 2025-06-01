@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./GameBoard.css"; // Importing styles for the game board
 import Orbs from "./Orbs"; // Importing the Orbs component to display orbs in each cell
 
+
 import {
   create_initial_board,
   is_valid_move,
@@ -23,12 +24,15 @@ const GameBoard = () => {
 
   const [move_count, set_move_count] = useState(0);
 
+  const [red_cell_count, set_red_cell_count] = useState(0);
+  const [blue_cell_count, set_blue_cell_count] = useState(0);
+
   const switchPlayer = () => {
     setCurrentPlayer(currentPlayer === "R" ? "B" : "R");
   };
 
-  const updateBoard = (newBoard) => {
-    setBoard(newBoard);
+  const update_board = (new_board) => {
+    setBoard(new_board);
   };
 
   const increment_move_count = () => {
@@ -48,8 +52,12 @@ const GameBoard = () => {
       currentPlayer,
       ROWS,
       COLS,
-      updateBoard,
-      setExplodingCells
+      update_board,
+      setExplodingCells,
+      red_cell_count,
+      blue_cell_count,
+      set_red_cell_count,
+      set_blue_cell_count
     );
 
     switchPlayer(); // Switch players
