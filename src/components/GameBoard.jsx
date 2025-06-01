@@ -27,6 +27,8 @@ const GameBoard = () => {
   const [red_cell_count, set_red_cell_count] = useState(0);
   const [blue_cell_count, set_blue_cell_count] = useState(0);
 
+  const [winner, set_winner] = useState(null);
+
   const switchPlayer = () => {
     setCurrentPlayer(currentPlayer === "R" ? "B" : "R");
   };
@@ -41,7 +43,7 @@ const GameBoard = () => {
 
   const handleCellClick = (rowIndex, colIndex) => {
     const cell = board[rowIndex][colIndex];
-    if (!is_valid_move(cell, currentPlayer)) return; // Check if the move is valid
+    if (!is_valid_move(cell, currentPlayer) || winner !== null) return; // Check if the move is valid
 
     increment_move_count();
 
@@ -58,7 +60,12 @@ const GameBoard = () => {
       blue_cell_count,
       set_red_cell_count,
       set_blue_cell_count
-    );
+    ).then((is_game_over) => {
+      if(is_game_over) {
+        set_winner(currentPlayer);
+        console.log("Game Over! Player " + currentPlayer + " wins!");
+      }
+    });
 
     switchPlayer(); // Switch players
   };

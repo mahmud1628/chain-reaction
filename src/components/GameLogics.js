@@ -68,7 +68,7 @@ export const update_cell = async (
   if (count >= critical_mass) {
     // If the cell reaches critical mass, trigger chain explosion
     await delay(150);
-    generate_chain_explosion(
+    const is_game_over = generate_chain_explosion(
       updated_board,
       row_index,
       col_index,
@@ -81,7 +81,10 @@ export const update_cell = async (
       set_red_cell_count,
       set_blue_cell_count
     );
+
+    return is_game_over; // Return true if the game is over, false otherwise
   }
+  return false; // indicates that game is not over yet
 };
 
 export const get_critical_mass = (row_index, col_index, ROWS, COLS) => {
@@ -206,10 +209,10 @@ export const generate_chain_explosion = async (
     set_blue_cell_count(red_blue_counts["B"]);
     set_red_cell_count(red_blue_counts["R"]);
     if (red_blue_counts["R"] === 0 || red_blue_counts["B"] === 0) {
-      console.log("Game Over");
-      return; // game is finished already.
+      return true; // indicates that game is over
     }
   }
+  return false; // indicates that game is not over
 };
 
 export const get_orb_orientation = (count, row, col, ROWS, COLS) => {
