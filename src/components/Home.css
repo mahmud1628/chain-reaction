@@ -1,0 +1,49 @@
+.home-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e1f2f, #0c0c14);
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.home-box {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 60px 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px #00000088;
+  backdrop-filter: blur(10px);
+  border: 1px solid #ffffff22;
+}
+
+.home-title {
+  font-size: 3rem;
+  margin-bottom: 40px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.home-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 14px 24px;
+  border: 1px solid #ffffff33;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.home-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}

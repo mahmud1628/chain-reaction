@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./GameBoard.css"; // Importing styles for the game board
 import Orbs from "./Orbs"; // Importing the Orbs component to display orbs in each cell
+import { Link } from "react-router-dom"; // Importing Link for navigation between routes
 
 import {
   create_initial_board,
@@ -13,7 +14,7 @@ import {
 const ROWS = 9;
 const COLS = 6;
 
-const GameBoard = () => {
+const GameBoard = ({player_names}) => {
   // State to hold the game board
   const [board, setBoard] = useState(create_initial_board(ROWS, COLS));
   // State to hold the current player
@@ -27,6 +28,10 @@ const GameBoard = () => {
   const [blue_cell_count, set_blue_cell_count] = useState(0);
 
   const [winner, set_winner] = useState(null);
+
+  const red_player_name = player_names.R || "Player 1";
+  const blue_player_name = player_names.B || "Player 2";
+  let winner_name = "";
 
   const switchPlayer = () => {
     setCurrentPlayer(currentPlayer === "R" ? "B" : "R");
@@ -61,10 +66,10 @@ const GameBoard = () => {
       set_blue_cell_count
     ).then((is_game_over) => {
       if (is_game_over) {
+        winner_name = currentPlayer === "R" ? red_player_name : blue_player_name;
         setTimeout(() => {
           set_winner(currentPlayer);
         }, 400);
-        console.log("Game Over! Player " + currentPlayer + " wins!");
       }
     });
 
@@ -106,11 +111,11 @@ const GameBoard = () => {
         <div className="overlay">
           <div className="winner-box">
             <h2 className="winner-text">
-              🎉 {winner === "R" ? "Player 1" : "Player 2"} Won!
+              🎉 {winner === "R" ? red_player_name : blue_player_name} Won!
             </h2>
             <div className="winner-buttons">
-              <button className="winner-btn">Play Again</button>
-              <button className="winner-btn">Back to Main Menu</button>
+              <Link to = "/twoplayer" className="winner-btn">Play Again</Link>
+              <Link to = "/" className="winner-btn">Back to Main Menu</Link>
             </div>
           </div>
         </div>
