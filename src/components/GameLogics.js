@@ -2,13 +2,20 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export const create_initial_board = (ROWS, COLS) =>
-  Array.from({ length: ROWS }, () =>
-    Array.from({ length: COLS }, () => ({
-      count: 0,
-      color: null,
-    }))
-  );
+export const create_initial_board = (ROWS, COLS) => {
+    let board = [];
+    for (let i = 0; i < ROWS; i++) {
+        let row = [];
+        for (let j = 0; j < COLS; j++) {
+            row.push({
+                count: 0,
+                color: null,
+            });
+        }
+        board.push(row);
+    }
+    return board;
+};
 
 export const is_valid_move = (cell, current_player) => {
   if (cell.color !== null && cell.color !== current_player) return false; // Cannot place orb in a cell occupied by the opponent
