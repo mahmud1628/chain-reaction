@@ -3,24 +3,24 @@ function delay(ms) {
 }
 
 export const create_initial_board = (ROWS, COLS) => {
-    let board = [];
-    for (let i = 0; i < ROWS; i++) {
-        let row = [];
-        for (let j = 0; j < COLS; j++) {
-            row.push({
-                count: 0,
-                color: null,
-            });
-        }
-        board.push(row);
+  let board = [];
+  for (let i = 0; i < ROWS; i++) {
+    let row = [];
+    for (let j = 0; j < COLS; j++) {
+      row.push({
+        count: 0,
+        color: null,
+      });
     }
-    return board;
+    board.push(row);
+  }
+  return board;
 };
 
 export const is_valid_move = (cell, current_player) => {
-    if(cell.color === null) return true; // valid moce if the cell is empty
-    if(cell.color === current_player) return true; // valid move if the cell is occupied by the current player
-    return false; // invalid move if the cell is occupied by the opponent already
+  if (cell.color === null) return true; // valid moce if the cell is empty
+  if (cell.color === current_player) return true; // valid move if the cell is occupied by the current player
+  return false; // invalid move if the cell is occupied by the opponent already
 };
 
 export const update_cell = async (
@@ -38,8 +38,11 @@ export const update_cell = async (
   set_blue_cell_count
 ) => {
   const updated_board = [...board];
-  let red_count = red_cell_count;
-  let blue_count = blue_cell_count;
+
+  let red_blue_counts = {
+    R: red_cell_count,
+    B: blue_cell_count,
+  };
 
   let count = updated_board[row_index][col_index].count;
   count += 1; // Increment the count of orbs in the cell
@@ -48,20 +51,17 @@ export const update_cell = async (
     color: current_player,
   };
 
-  if(count === 1) {
+  if (count === 1) {
     // Increment the count of cells occupied by the current player
-    if(current_player === "R") {
-      set_red_cell_count(prev => prev + 1);
-      red_count += 1;
-    } else {
-      set_blue_cell_count(prev => prev + 1);
-      blue_count += 1;
-    }
+    if (current_player === "R") set_red_cell_count((prev) => prev + 1);
+    else set_blue_cell_count((prev) => prev + 1);
+
+    red_blue_counts[current_player] += 1; // Update the count of cells occupied by the current player
   }
 
   update_board(structuredClone(updated_board)); // Update the board state after incrementing orb count
 
-      console.log("hello" + current_player + " " + red_count + " " + blue_count);
+  console.log("hello" + current_player + " " + red_blue_counts["R"] + " " + red_blue_counts["B"]);
 
   let critical_mass = get_critical_mass(row_index, col_index, ROWS, COLS);
 
@@ -77,8 +77,7 @@ export const update_cell = async (
       COLS,
       update_board,
       set_exploiding_cells,
-      red_count,
-      blue_count,
+      red_blue_counts,
       set_red_cell_count,
       set_blue_cell_count
     );
@@ -121,8 +120,7 @@ export const generate_chain_explosion = async (
   COLS,
   update_board,
   set_exploiding_cells,
-  red_count,
-  blue_count,
+  red_blue_counts,
   set_red_cell_count,
   set_blue_cell_count
 ) => {
@@ -131,7 +129,6 @@ export const generate_chain_explosion = async (
   let opponenet_player = current_player === "R" ? "B" : "R";
 
   while (indices_of_current_exploding_cells.length > 0) {
-
     set_exploiding_cells(indices_of_current_exploding_cells);
     await delay(250); // for animation of the explosion
     set_exploiding_cells([]);
@@ -141,8 +138,7 @@ export const generate_chain_explosion = async (
       const cell = board[row][col];
       cell.count = 0;
       cell.color = null;
-      if(current_player === "R") red_count -= 1;
-      else blue_count -= 1; // decrement the count of cells occupied by the current player
+      red_blue_counts[current_player] -= 1; // decrement the count of cells occupied by the current player
     }
 
     update_board(structuredClone(board)); // all the exploiding cells will explode in the same time now
@@ -161,50 +157,55 @@ export const generate_chain_explosion = async (
       for (const orthogonal_index of indices_of_orthogonal_cells) {
         const [orthogonal_row_index, orthogonal_col_index] = orthogonal_index;
 
-        const is_valid_row = orthogonal_row_index >= 0 && orthogonal_row_index < ROWS;
-        const is_valid_col = orthogonal_col_index >= 0 && orthogonal_col_index < COLS;
+        const is_valid_row =
+          orthogonal_row_index >= 0 && orthogonal_row_index < ROWS;
+        const is_valid_col =
+          orthogonal_col_index >= 0 && orthogonal_col_index < COLS;
         const is_valid_cell = is_valid_row && is_valid_col;
 
-        if(!is_valid_cell) continue; // skip if the cell is out of bounds
+        if (!is_valid_cell) continue; // skip if the cell is out of bounds
 
-        
-        const orthogonal_cell = board[orthogonal_row_index][orthogonal_col_index];
+        const orthogonal_cell =
+          board[orthogonal_row_index][orthogonal_col_index];
         orthogonal_cell.count += 1;
 
-        if(orthogonal_cell.color === null) {
-          if(current_player === "R") red_count += 1;
-          else blue_count += 1; // Increment the count of cells occupied by the current player
+        if (orthogonal_cell.color === null) {
+          red_blue_counts[current_player] += 1; // Increment the count of cells occupied by the current player
         }
-        if(orthogonal_cell.color === opponenet_player) {
-          if(current_player === "R") {
-            blue_count -= 1; // Decrement the count of cells occupied by the opponent
-            red_count += 1; // Increment the count of cells occupied by the current player
-          } 
-          else {
-            red_count -= 1; // Decrement the count of cells occupied by the opponent
-            blue_count += 1; // Increment the count of cells occupied by the current player
-          }
+        if (orthogonal_cell.color === opponenet_player) {
+          red_blue_counts[opponenet_player] -= 1; // Decrement the count of cells occupied by the opponent player
+          red_blue_counts[current_player] += 1; // Increment the count of cells occupied by the current player
         }
+
         orthogonal_cell.color = current_player;
 
-        const critical_mass = get_critical_mass(orthogonal_row_index, orthogonal_col_index, ROWS, COLS);
+        const critical_mass = get_critical_mass(
+          orthogonal_row_index,
+          orthogonal_col_index,
+          ROWS,
+          COLS
+        );
         const is_critical_mass = orthogonal_cell.count >= critical_mass;
 
-        const is_already_exploding = indices_of_next_exploding_cells.some(([r, c]) => r === orthogonal_row_index && c === orthogonal_col_index);
+        const is_already_exploding = indices_of_next_exploding_cells.some(
+          ([r, c]) => r === orthogonal_row_index && c === orthogonal_col_index
+        );
 
         if (is_critical_mass && !is_already_exploding) {
-            indices_of_next_exploding_cells.push([orthogonal_row_index, orthogonal_col_index]);
+          indices_of_next_exploding_cells.push([
+            orthogonal_row_index,
+            orthogonal_col_index,
+          ]);
         }
-
       }
     }
 
     update_board(structuredClone(board));
     await delay(100); // small delay before next explosion
     indices_of_current_exploding_cells = indices_of_next_exploding_cells;
-    set_blue_cell_count(blue_count);
-    set_red_cell_count(red_count);
-    if(red_count === 0 || blue_count === 0) {
+    set_blue_cell_count(red_blue_counts["B"]);
+    set_red_cell_count(red_blue_counts["R"]);
+    if (red_blue_counts["R"] === 0 || red_blue_counts["B"] === 0) {
       console.log("Game Over");
       return; // game is finished already.
     }
