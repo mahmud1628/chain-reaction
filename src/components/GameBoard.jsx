@@ -45,13 +45,13 @@ const GameBoard = ({player_names}) => {
     set_move_count(move_count + 1);
   };
 
-  const handleCellClick = (rowIndex, colIndex) => {
+  const handleCellClick = async (rowIndex, colIndex) => {
     const cell = board[rowIndex][colIndex];
     if (!is_valid_move(cell, currentPlayer) || winner !== null) return; // Check if the move is valid
 
     increment_move_count();
 
-    update_cell(
+    await update_cell(
       board,
       rowIndex,
       colIndex,
@@ -78,6 +78,10 @@ const GameBoard = ({player_names}) => {
 
   return (
     <div className="game-container">
+      <Link to="/" className="back-btn">
+  ⬅️ Back to Main Menu
+</Link>
+
       <div className="board">
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="board-row">
@@ -120,6 +124,22 @@ const GameBoard = ({player_names}) => {
           </div>
         </div>
       )}
+
+  <div className="turn-float-box">
+  <div
+    key={currentPlayer} 
+    className={`turn-indicator-content ${
+      currentPlayer === "R" ? "turn-red" : "turn-blue"
+    }`}
+  >
+    {currentPlayer === "R" ? (
+      <>🔴 {player_names.R || "Player 1"}'s Turn</>
+    ) : (
+      <>🔵 {player_names.B || "Player 2"}'s Turn</>
+    )}
+  </div>
+</div>
+
     </div>
   );
 };
