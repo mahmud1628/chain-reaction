@@ -21,6 +21,8 @@ const GameBoard = () => {
 
   const [explodingCells, setExplodingCells] = useState([]);
 
+  const [move_count, set_move_count] = useState(0);
+
   const switchPlayer = () => {
     setCurrentPlayer(currentPlayer === "R" ? "B" : "R");
   };
@@ -29,9 +31,15 @@ const GameBoard = () => {
     setBoard(newBoard);
   };
 
+  const increment_move_count = () => {
+    set_move_count(move_count + 1);
+  }
+
   const handleCellClick = (rowIndex, colIndex) => {
     const cell = board[rowIndex][colIndex];
     if (!is_valid_move(cell, currentPlayer)) return; // Check if the move is valid
+
+    increment_move_count();
 
     update_cell(
       board,
