@@ -1,12 +1,12 @@
 import "./Orbs.css";
-import { getOrbOrientation } from "./GameLogics";
+import { get_orb_orientation } from "./GameLogics";
 
 const Orbs = (props) => {
   const { count, color, row, col , ROWS, COLS} = props;
   if(typeof count !== "number" || !color) return null; // invalid props
   if (count == 0) return null; // no orbs to display
 
-  const orbPositions = getOrbOrientation(count, row, col, ROWS, COLS);
+  const orbPositions = get_orb_orientation(count, row, col, ROWS, COLS);
 
   const safeCount = Math.min(count, 4); // protect against invalid count
 

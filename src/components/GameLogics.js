@@ -159,8 +159,8 @@ export const generate_chain_explosion = async (
   }
 };
 
-export const getOrbOrientation = (count, row, col, ROWS, COLS) => {
-  const defaultPositions = {
+export const get_orb_orientation = (count, row, col, ROWS, COLS) => {
+  const default_orientation = {
     1: [{ left: "50%", top: "50%" }],
     2: [
       { left: "25%", top: "50%" },
@@ -181,22 +181,22 @@ export const getOrbOrientation = (count, row, col, ROWS, COLS) => {
 
   if (count === 2) {
     if (row === 0 && col === 0) {
-      defaultPositions[2] = [
+      default_orientation[2] = [
         { left: "75%", top: "50%" },
         { left: "50%", top: "75%" },
       ];
     } else if (row === 0 && col === COLS - 1) {
-      defaultPositions[2] = [
+      default_orientation[2] = [
         { left: "25%", top: "50%" },
         { left: "50%", top: "75%" },
       ];
     } else if (row === ROWS - 1 && col === 0) {
-      defaultPositions[2] = [
+      default_orientation[2] = [
         { left: "75%", top: "50%" },
         { left: "50%", top: "25%" },
       ];
     } else if (row === ROWS - 1 && col === COLS - 1) {
-      defaultPositions[2] = [
+      default_orientation[2] = [
         { left: "25%", top: "50%" },
         { left: "50%", top: "25%" },
       ];
@@ -205,25 +205,25 @@ export const getOrbOrientation = (count, row, col, ROWS, COLS) => {
 
   if (count === 3) {
     if (row === 0) {
-      defaultPositions[3] = [
+      default_orientation[3] = [
         { left: "25%", top: "25%" },
         { left: "75%", top: "25%" },
         { left: "50%", top: "75%" },
       ];
     } else if (row === ROWS - 1) {
-      defaultPositions[3] = [
+      default_orientation[3] = [
         { left: "25%", top: "75%" },
         { left: "75%", top: "75%" },
         { left: "50%", top: "25%" },
       ];
     } else if (col === 0) {
-      defaultPositions[3] = [
+      default_orientation[3] = [
         { left: "25%", top: "75%" },
         { left: "75%", top: "50%" },
         { left: "25%", top: "25%" },
       ];
     } else if (col === COLS - 1) {
-      defaultPositions[3] = [
+      default_orientation[3] = [
         { left: "25%", top: "50%" },
         { left: "75%", top: "75%" },
         { left: "75%", top: "25%" },
@@ -231,5 +231,5 @@ export const getOrbOrientation = (count, row, col, ROWS, COLS) => {
     }
   }
 
-  return defaultPositions;
+  return default_orientation;
 };
