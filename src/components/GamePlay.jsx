@@ -3,7 +3,7 @@ import "./GamePlay.css"; // Importing styles for the game board
 import Orbs from "./Orbs"; // Importing the Orbs component to display orbs in each cell
 import { Link } from "react-router-dom"; // Importing Link for navigation between routes
 import Winner from "./Winner"; // Importing the Winner component to display the winner  
-import PlayerTurn from "./PlayerTurn"; // Importing the PlayerTurn component to display the current player's turn
+import TopBarInGamePlay from "./TopBarInGamePlay"; // Importing the TopBar component to display the current player's turn
 import {
   create_initial_board,
   is_valid_move,
@@ -75,10 +75,7 @@ const GamePlay = ({ player_names }) => {
 
   return (
     <div className="game-container">
-      <Link to="/" className="back-btn">
-        ⬅️ Back to Main Menu
-      </Link>
-
+        <TopBarInGamePlay current_player={current_player} player_names={player_names}/>
       <div className="board">
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="board-row">
@@ -108,7 +105,6 @@ const GamePlay = ({ player_names }) => {
         ))}
       </div>
       <Winner winner={winner} red_player_name={red_player_name} blue_player_name={blue_player_name} />
-      <PlayerTurn current_player={current_player} player_names={player_names} />
     </div>
   );
 };
