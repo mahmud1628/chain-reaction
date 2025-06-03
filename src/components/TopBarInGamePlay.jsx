@@ -7,7 +7,7 @@ const TopBarInGamePlay = ({ current_player, player_names }) => {
     return (
         <>
     <Link to="/" className="back-btn">
-        ⬅️ Back to Main Menu
+        ⬅️ Exit
       </Link>
             <PlayerTurn current_player={current_player} player_names={player_names} />
       </>
