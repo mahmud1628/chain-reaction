@@ -14,7 +14,7 @@ import {
 const ROWS = 9;
 const COLS = 6;
 
-const GameBoard = ({player_names}) => {
+const GameBoard = ({ player_names }) => {
   // State to hold the game board
   const [board, setBoard] = useState(create_initial_board(ROWS, COLS));
   // State to hold the current player
@@ -66,7 +66,8 @@ const GameBoard = ({player_names}) => {
       set_blue_cell_count
     ).then((is_game_over) => {
       if (is_game_over) {
-        winner_name = currentPlayer === "R" ? red_player_name : blue_player_name;
+        winner_name =
+          currentPlayer === "R" ? red_player_name : blue_player_name;
         setTimeout(() => {
           set_winner(currentPlayer);
         }, 400);
@@ -79,8 +80,8 @@ const GameBoard = ({player_names}) => {
   return (
     <div className="game-container">
       <Link to="/" className="back-btn">
-  ⬅️ Back to Main Menu
-</Link>
+        ⬅️ Back to Main Menu
+      </Link>
 
       <div className="board">
         {board.map((row, rowIndex) => (
@@ -118,28 +119,31 @@ const GameBoard = ({player_names}) => {
               🎉 {winner === "R" ? red_player_name : blue_player_name} Won!
             </h2>
             <div className="winner-buttons">
-              <Link to = "/twoplayer" className="winner-btn">Play Again</Link>
-              <Link to = "/" className="winner-btn">Back to Main Menu</Link>
+              <Link to="/twoplayer" className="winner-btn">
+                Play Again
+              </Link>
+              <Link to="/" className="winner-btn">
+                Back to Main Menu
+              </Link>
             </div>
           </div>
         </div>
       )}
 
-  <div className="turn-float-box">
-  <div
-    key={currentPlayer} 
-    className={`turn-indicator-content ${
-      currentPlayer === "R" ? "turn-red" : "turn-blue"
-    }`}
-  >
-    {currentPlayer === "R" ? (
-      <>🔴 {player_names.R || "Player 1"}'s Turn</>
-    ) : (
-      <>🔵 {player_names.B || "Player 2"}'s Turn</>
-    )}
-  </div>
-</div>
-
+      <div className="turn-float-box">
+        <div
+          key={currentPlayer}
+          className={`turn-indicator-content ${
+            currentPlayer === "R" ? "turn-red" : "turn-blue"
+          }`}
+        >
+          {currentPlayer === "R" ? (
+            <>🔴 {player_names.R || "Player 1"}'s Turn</>
+          ) : (
+            <>🔵 {player_names.B || "Player 2"}'s Turn</>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
