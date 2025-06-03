@@ -1,23 +1,21 @@
-import React, { useState } from "react";
-import "./GameBoard.css"; // Importing styles for the game board
+import { useState } from "react";
+import "./GamePlay.css"; // Importing styles for the game board
 import Orbs from "./Orbs"; // Importing the Orbs component to display orbs in each cell
 import { Link } from "react-router-dom"; // Importing Link for navigation between routes
-
+import Winner from "./Winner"; // Importing the Winner component to display the winner  
+import PlayerTurn from "./PlayerTurn"; // Importing the PlayerTurn component to display the current player's turn
 import {
   create_initial_board,
   is_valid_move,
   update_cell,
-  generate_chain_explosion,
-  get_critical_mass,
 } from "./GameLogics";
-import PlayerTurn from "./PlayerTurn";
 
 const ROWS = 9;
 const COLS = 6;
 
-const GameBoard = ({ player_names }) => {
+const GamePlay = ({ player_names }) => {
   // State to hold the game board
-  const [board, setBoard] = useState(create_initial_board(ROWS, COLS));
+  const [board, set_board] = useState(create_initial_board(ROWS, COLS));
   // State to hold the current player
   const [current_player, set_current_player] = useState("R"); // Player 1 plays with red orbs, Player 2 with blue orbs
 
@@ -34,12 +32,12 @@ const GameBoard = ({ player_names }) => {
   const blue_player_name = player_names.B || "Player 2";
   let winner_name = "";
 
-  const switchPlayer = () => {
+  const switch_player = () => {
     set_current_player(current_player === "R" ? "B" : "R");
   };
 
   const update_board = (new_board) => {
-    setBoard(new_board);
+    set_board(new_board);
   };
 
   const increment_move_count = () => {
@@ -75,7 +73,7 @@ const GameBoard = ({ player_names }) => {
       }
     });
 
-    switchPlayer(); // Switch players
+    switch_player(); // Switch players
   };
 
   return (
@@ -112,27 +110,10 @@ const GameBoard = ({ player_names }) => {
           </div>
         ))}
       </div>
-
-      {winner && (
-        <div className="overlay">
-          <div className="winner-box">
-            <h2 className="winner-text">
-              🎉 {winner === "R" ? red_player_name : blue_player_name} Won!
-            </h2>
-            <div className="winner-buttons">
-              <Link to="/twoplayer" className="winner-btn">
-                Play Again
-              </Link>
-              <Link to="/" className="winner-btn">
-                Back to Main Menu
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+      <Winner winner={winner} red_player_name={red_player_name} blue_player_name={blue_player_name} />
       <PlayerTurn current_player={current_player} player_names={player_names} />
     </div>
   );
 };
 
-export default GameBoard;
+export default GamePlay;
