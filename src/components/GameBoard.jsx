@@ -10,6 +10,7 @@ import {
   generate_chain_explosion,
   get_critical_mass,
 } from "./GameLogics";
+import PlayerTurn from "./PlayerTurn";
 
 const ROWS = 9;
 const COLS = 6;
@@ -18,7 +19,7 @@ const GameBoard = ({ player_names }) => {
   // State to hold the game board
   const [board, setBoard] = useState(create_initial_board(ROWS, COLS));
   // State to hold the current player
-  const [currentPlayer, setCurrentPlayer] = useState("R"); // Player 1 plays with red orbs, Player 2 with blue orbs
+  const [current_player, set_current_player] = useState("R"); // Player 1 plays with red orbs, Player 2 with blue orbs
 
   const [explodingCells, setExplodingCells] = useState([]);
 
@@ -34,7 +35,7 @@ const GameBoard = ({ player_names }) => {
   let winner_name = "";
 
   const switchPlayer = () => {
-    setCurrentPlayer(currentPlayer === "R" ? "B" : "R");
+    set_current_player(current_player === "R" ? "B" : "R");
   };
 
   const update_board = (new_board) => {
@@ -47,7 +48,7 @@ const GameBoard = ({ player_names }) => {
 
   const handleCellClick = async (rowIndex, colIndex) => {
     const cell = board[rowIndex][colIndex];
-    if (!is_valid_move(cell, currentPlayer) || winner !== null) return; // Check if the move is valid
+    if (!is_valid_move(cell, current_player) || winner !== null) return; // Check if the move is valid
 
     increment_move_count();
 
@@ -55,7 +56,7 @@ const GameBoard = ({ player_names }) => {
       board,
       rowIndex,
       colIndex,
-      currentPlayer,
+      current_player,
       ROWS,
       COLS,
       update_board,
@@ -67,9 +68,9 @@ const GameBoard = ({ player_names }) => {
     ).then((is_game_over) => {
       if (is_game_over) {
         winner_name =
-          currentPlayer === "R" ? red_player_name : blue_player_name;
+          current_player === "R" ? red_player_name : blue_player_name;
         setTimeout(() => {
-          set_winner(currentPlayer);
+          set_winner(current_player);
         }, 400);
       }
     });
@@ -129,21 +130,7 @@ const GameBoard = ({ player_names }) => {
           </div>
         </div>
       )}
-
-      <div className="turn-float-box">
-        <div
-          key={currentPlayer}
-          className={`turn-indicator-content ${
-            currentPlayer === "R" ? "turn-red" : "turn-blue"
-          }`}
-        >
-          {currentPlayer === "R" ? (
-            <>🔴 {player_names.R || "Player 1"}'s Turn</>
-          ) : (
-            <>🔵 {player_names.B || "Player 2"}'s Turn</>
-          )}
-        </div>
-      </div>
+      <PlayerTurn current_player={current_player} player_names={player_names} />
     </div>
   );
 };
