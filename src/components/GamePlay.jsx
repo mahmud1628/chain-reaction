@@ -30,7 +30,6 @@ const GamePlay = ({ player_names }) => {
 
   const red_player_name = player_names.R || "Player 1";
   const blue_player_name = player_names.B || "Player 2";
-  let winner_name = "";
 
   const switch_player = () => {
     set_current_player(current_player === "R" ? "B" : "R");
@@ -65,8 +64,6 @@ const GamePlay = ({ player_names }) => {
       set_blue_cell_count
     ).then((is_game_over) => {
       if (is_game_over) {
-        winner_name =
-          current_player === "R" ? red_player_name : blue_player_name;
         setTimeout(() => {
           set_winner(current_player);
         }, 400);

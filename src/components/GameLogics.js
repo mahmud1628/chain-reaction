@@ -61,8 +61,6 @@ export const update_cell = async (
 
   update_board(structuredClone(updated_board)); // Update the board state after incrementing orb count
 
-  console.log("hello" + current_player + " " + red_blue_counts["R"] + " " + red_blue_counts["B"]);
-
   let critical_mass = get_critical_mass(row_index, col_index, ROWS, COLS);
 
   if (count >= critical_mass) {
