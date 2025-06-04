@@ -5,6 +5,7 @@
   align-items: center;
   justify-content: center;
   color: #fff;
+  overflow: hidden;
 }
 
 .setup-box {
@@ -53,4 +54,21 @@
 .setup-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: scale(1.05);
+}
+
+@media (max-width: 400px) {
+  .setup-box {
+    width: 90%;
+    padding: 30px 20px;
+  }
+
+  .setup-box input {
+    font-size: 0.95rem;
+    padding: 8px 10px;
+  }
+
+  .setup-btn {
+    font-size: 0.95rem;
+    padding: 8px 16px;
+  }
 }
