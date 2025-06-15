@@ -1,6 +1,23 @@
 import "./PlayerTurn.css";
 
 const PlayerTurn = (props) => {
+  const red = (name, version) => {
+    if(version === "ai") {
+      return "Your turn";
+    }
+    else {
+      return `${name || "Player 1"}'s Turn`;
+    }
+  }
+
+  const blue = (name, version) => {
+    if(version === "ai") {
+      return "Waiting for AI's move";
+    }
+    else {
+      return `${name || "Player 2"}'s Turn`;
+    }
+  }
   return (
     <div className="turn-float-box">
       <div
@@ -10,9 +27,9 @@ const PlayerTurn = (props) => {
         }`}
       >
         {props.current_player === "R" ? (
-          <>🔴 {props.player_names.R || "Player 1"}'s Turn</>
+          <>🔴 {red(props.player_names.R, props.version)}</>
         ) : (
-          <>🔵 {props.player_names.B || "Player 2"}'s Turn</>
+          <>🔵 {blue(props.player_names.B, props.version)}</>
         )}
       </div>
     </div>
