@@ -5,15 +5,15 @@ const Home = () => {
   return (
     <div className="home-container">
       <div className="home-box">
-        <h1 className="home-title">Chain Reaction</h1>
+        <h1 className="home-title">Chain Burst</h1>
         <div className="home-buttons">
           <Link to = "/twoplayer" className="home-btn">
             🔴 Play 2-Player
           </Link>
-          <Link to = "/" className="home-btn">
-            🤖 Play with Computer
+          <Link to = "/game/ai" className="home-btn">
+            🤖 Play with AI
           </Link>
-          <Link to = "/" className="home-btn">
+          <Link to = "/game/rules" className="home-btn">
             📘 Game Rules
           </Link>
         </div>
