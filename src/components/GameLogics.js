@@ -287,3 +287,19 @@ export const get_orb_orientation = (count, row, col, ROWS, COLS) => {
 
   return default_orientation;
 };
+
+export const get_random_move = (board) => {
+  const valid_moves = [];
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board[i].length; j++) {
+      if (is_valid_move(board[i][j], "R")) {
+        valid_moves.push({ row: i, col: j });
+      }
+    }
+  }
+  
+  if (valid_moves.length === 0) return null; 
+  
+  const random_index = Math.floor(Math.random() * valid_moves.length);
+  return valid_moves[random_index];
+}

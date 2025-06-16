@@ -5,6 +5,12 @@ const PlayerTurn = (props) => {
     if(version === "ai") {
       return "Your turn";
     }
+    else  if(version === "random") {
+      return "Random agent's turn";
+    }
+    else if(version === "aivsai") {
+      return "Red AI's turn";
+    }
     else {
       return `${name || "Player 1"}'s Turn`;
     }
@@ -13,6 +19,12 @@ const PlayerTurn = (props) => {
   const blue = (name, version) => {
     if(version === "ai") {
       return "Waiting for AI's move";
+    }
+    else if(version === "random") {
+      return "AI agent's turn";
+    }
+    else if(version === "aivsai") {
+      return "Blue AI's turn";
     }
     else {
       return `${name || "Player 2"}'s Turn`;

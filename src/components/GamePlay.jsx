@@ -96,8 +96,8 @@ useEffect(() => {
       })
       .catch((err) => {
         console.error("AI move error:", err);
-        setCurrentPlayer("Human");
-        setDisabled(false);
+        set_current_player("Human");
+        set_disabled(false);
       });
 
       }, 1000);
