@@ -31,6 +31,8 @@ const Agentvsagent = (props) => {
   const red_player_name = props.player_names.R || "Player 1";
   const blue_player_name = props.player_names.B || "Player 2";
 
+  const [move_count, set_move_count] = useState(0);
+
   const switch_player = () => {
     set_current_player(current_player === "R" ? "B" : "R");
   };
@@ -40,11 +42,14 @@ const Agentvsagent = (props) => {
   };
 
   useEffect(() => {
+    console.log("Move count:", move_count);
     if (
       current_player === "R" &&
       props.version === "random" &&
       winner === null
     ) {
+            set_move_count((prev) => prev + 1);
+
       const move = get_random_move(board);
 
       const timer = setTimeout(() => {
@@ -63,7 +68,7 @@ const Agentvsagent = (props) => {
           set_blue_cell_count
         ).then((is_game_over) => {
           if (is_game_over) {
-            setTimeout(() => set_winner("Random agent"), 400);
+            setTimeout(() => set_winner("R"), 400);
           }
           else switch_player();
         });
@@ -75,6 +80,8 @@ const Agentvsagent = (props) => {
       props.version === "aivsai" &&
       winner === null
     ) {
+            set_move_count((prev) => prev + 1);
+
       const timer = setTimeout(() => {
         fetch("http://localhost:3000/ai-vs-ai", {
           method: "POST",
@@ -100,7 +107,7 @@ const Agentvsagent = (props) => {
               set_blue_cell_count
             ).then((is_game_over) => {
               if (is_game_over) {
-                setTimeout(() => set_winner("AI Red"), 400);
+                setTimeout(() => set_winner("R"), 400);
               }
               else
                 switch_player();
@@ -115,6 +122,8 @@ const Agentvsagent = (props) => {
     }
 
     else if (current_player === "B" && winner === null) {
+            set_move_count((prev) => prev + 1);
+
       const timer = setTimeout(() => {
         fetch("http://localhost:3000/ai-move", {
           method: "POST",
@@ -140,7 +149,7 @@ const Agentvsagent = (props) => {
               set_blue_cell_count
             ).then((is_game_over) => {
               if (is_game_over) {
-                setTimeout(() => set_winner("AI"), 400);
+                setTimeout(() => set_winner("B"), 400);
               }
               else
                 switch_player();
@@ -153,6 +162,7 @@ const Agentvsagent = (props) => {
 
       return () => clearTimeout(timer); // Cleanup the timer on component unmount or when current_player changes
     }
+    console.log("move count:", move_count);
   }, [current_player]);
 
   return (
