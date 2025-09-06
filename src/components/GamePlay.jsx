@@ -6,10 +6,11 @@ import Winner from "./Winner"; // Importing the Winner component to display the 
 import TopBarInGamePlay from "./TopBarInGamePlay"; // Importing the TopBar component to display the current player's turn
 import { create_initial_board, is_valid_move, update_cell } from "./GameLogics";
 
-const ROWS = 9;
-const COLS = 6;
-
 const GamePlay = (props) => {
+  // Get dynamic grid size from props, fallback to default values
+  const ROWS = props.grid_size?.rows || 9;
+  const COLS = props.grid_size?.cols || 6;
+  
   // State to hold the game board
   const [board, set_board] = useState(create_initial_board(ROWS, COLS));
   // State to hold the current player
@@ -27,6 +28,18 @@ const GamePlay = (props) => {
 
   const red_player_name = props.player_names.R || "Player 1";
   const blue_player_name = props.player_names.B || "Player 2";
+
+  // Reset board when grid size changes
+  useEffect(() => {
+    set_board(create_initial_board(ROWS, COLS));
+    set_current_player("R");
+    set_move_count(0);
+    set_red_cell_count(0);
+    set_blue_cell_count(0);
+    set_winner(null);
+    setExplodingCells([]);
+    set_disabled(false);
+  }, [ROWS, COLS]);
 
   const switch_player = () => {
     set_current_player(current_player === "R" ? "B" : "R");
@@ -76,10 +89,10 @@ useEffect(() => {
     const timer = setTimeout(() => {
       
     
-    fetch("http://localhost:3000/ai-move", {
+    fetch("http://localhost:8080/ai-move", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ board }),
+      body: JSON.stringify({ "cells": board }),
     })
       .then((res) => res.json())
       .then(({ row, col }) => {
