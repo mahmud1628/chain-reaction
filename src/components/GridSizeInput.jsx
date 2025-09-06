@@ -5,6 +5,7 @@ import "./GridSizeInput.css";
 const GridSizeInput = ({ setGridSize }) => {
   const [rows, setRows] = useState(9);
   const [cols, setCols] = useState(6);
+  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -39,52 +40,105 @@ const GridSizeInput = ({ setGridSize }) => {
   return (
     <div className="grid-size-container">
       <div className="grid-size-box">
-        <h2>🎯 Select Grid Size</h2>
-        <p className="grid-size-subtitle">
-          {isAIGame ? "Playing with AI" : "2-Player Game"}
-        </p>
-        
-        <div className="input-group">
-          <label htmlFor="rows">Rows (5-9):</label>
-          <input
-            id="rows"
-            type="number"
-            min="5"
-            max="9"
-            value={rows}
-            onChange={handleRowChange}
-          />
+        <div className="header-section">
+          <h2>🎯 Configure BattleField</h2>
+          <p className="grid-size-subtitle">
+            {isAIGame ? "🤖 Battle With AI" : "👥 Two Player Duel"}
+          </p>
         </div>
         
-        <div className="input-group">
-          <label htmlFor="cols">Columns (4-6):</label>
-          <input
-            id="cols"
-            type="number"
-            min="4"
-            max="6"
-            value={cols}
-            onChange={handleColChange}
-          />
+        <div className="input-section">
+          <div className="input-group">
+            <label htmlFor="rows">
+              <span className="label-icon">📏</span>
+              Rows <span className="range">(5-9)</span>
+            </label>
+            <div className="input-wrapper">
+              <input
+                id="rows"
+                type="number"
+                min="5"
+                max="9"
+                value={rows}
+                onChange={handleRowChange}
+                className="size-input"
+              />
+              <div className="input-stepper">
+                <button 
+                  type="button" 
+                  onClick={() => setRows(Math.min(9, rows + 1))}
+                  className="stepper-btn"
+                >+</button>
+                <button 
+                  type="button" 
+                  onClick={() => setRows(Math.max(5, rows - 1))}
+                  className="stepper-btn"
+                >-</button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="input-group">
+            <label htmlFor="cols">
+              <span className="label-icon">📐</span>
+              Columns <span className="range">(4-6)</span>
+            </label>
+            <div className="input-wrapper">
+              <input
+                id="cols"
+                type="number"
+                min="4"
+                max="6"
+                value={cols}
+                onChange={handleColChange}
+                className="size-input"
+              />
+              <div className="input-stepper">
+                <button 
+                  type="button" 
+                  onClick={() => setCols(Math.min(6, cols + 1))}
+                  className="stepper-btn"
+                >+</button>
+                <button 
+                  type="button" 
+                  onClick={() => setCols(Math.max(4, cols - 1))}
+                  className="stepper-btn"
+                >-</button>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="grid-preview">
-          <p>Grid Preview: {rows} × {cols}</p>
+          <p className="preview-title">
+            🎮 Grid Preview: {rows} × {cols}
+          </p>
           <div className="mini-grid">
             {Array.from({ length: Math.min(rows, 5) }, (_, r) => (
               <div key={r} className="mini-row">
                 {Array.from({ length: Math.min(cols, 6) }, (_, c) => (
-                  <div key={c} className="mini-cell"></div>
+                  <div key={c} className="mini-cell" style={{
+                    animationDelay: `${(r * cols + c) * 0.1}s`
+                  }}></div>
                 ))}
               </div>
             ))}
-            {rows > 5 && <div className="dots">...</div>}
+            {rows > 5 && <div className="dots">⋮</div>}
           </div>
         </div>
         
         <div className="grid-size-buttons">
-          <Link to="/" className="grid-size-btn">Back</Link>
-          <button onClick={handleContinue} className="grid-size-btn">Continue</button>
+          <Link to="/" className="grid-size-btn back-btn">
+            ⬅ Back
+          </Link>
+          <button 
+            onClick={handleContinue} 
+            className="grid-size-btn continue-btn"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {isHovered ? "🚀 Start Battle!" : "Continue ➡"}
+          </button>
         </div>
       </div>
     </div>
