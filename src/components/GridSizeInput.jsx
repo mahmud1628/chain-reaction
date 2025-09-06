@@ -16,7 +16,7 @@ const GridSizeInput = ({ setGridSize }) => {
     if (rows >= 5 && rows <= 9 && cols >= 4 && cols <= 6) {
       setGridSize({ rows, cols });
       if (isAIGame) {
-        navigate("/game/ai");
+        navigate("/difficulty");
       } else {
         navigate("/twoplayer");
       }
