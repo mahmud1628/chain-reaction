@@ -6,10 +6,11 @@ import Winner from "./Winner"; // Importing the Winner component to display the 
 import TopBarInGamePlay from "./TopBarInGamePlay"; // Importing the TopBar component to display the current player's turn
 import { create_initial_board, is_valid_move, update_cell } from "./GameLogics";
 
-const ROWS = 9;
-const COLS = 6;
-
 const GamePlay = (props) => {
+  // Get dynamic grid size from props, fallback to default values
+  const ROWS = props.grid_size?.rows || 9;
+  const COLS = props.grid_size?.cols || 6;
+  
   // State to hold the game board
   const [board, set_board] = useState(create_initial_board(ROWS, COLS));
   // State to hold the current player
@@ -28,9 +29,17 @@ const GamePlay = (props) => {
   const red_player_name = props.player_names.R || "Player 1";
   const blue_player_name = props.player_names.B || "Player 2";
 
-  const switch_player = () => {
-    set_current_player(current_player === "R" ? "B" : "R");
-  };
+  // Reset board when grid size changes
+  useEffect(() => {
+    set_board(create_initial_board(ROWS, COLS));
+    set_current_player("R");
+    set_move_count(0);
+    set_red_cell_count(0);
+    set_blue_cell_count(0);
+    set_winner(null);
+    setExplodingCells([]);
+    set_disabled(false);
+  }, [ROWS, COLS]);
 
   const update_board = (new_board) => {
     set_board(new_board);
@@ -44,6 +53,9 @@ const handleCellClick = (rowIndex, colIndex) => {
 
   const cell = board[rowIndex][colIndex];
   if (!is_valid_move(cell, current_player)) return;
+
+  // Disable board immediately to prevent multiple clicks
+  set_disabled(true);
 
   increment_move_count();
 
@@ -65,46 +77,71 @@ const handleCellClick = (rowIndex, colIndex) => {
       setTimeout(() => set_winner(current_player), 400);
       return;
     }
-    switch_player();
+    
+    // Switch player after human move
+    const nextPlayer = current_player === "R" ? "B" : "R";
+    set_current_player(nextPlayer);
+    
+    // If next player is AI, keep board disabled; otherwise enable it
+    if (props.version !== "ai" || nextPlayer === "R") {
+      set_disabled(false);
+    }
   });
 };
 
 useEffect(() => {
-  if (current_player === "B" && props.version === "ai") {
-    set_disabled(true);  // disable board during AI move
-
-    const timer = setTimeout(() => {
-      
+  if (current_player === "B" && props.version === "ai" && !winner) {
+    // AI's turn - board should already be disabled from handleCellClick
     
-    fetch("http://localhost:3000/ai-move", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ board }),
-    })
-      .then((res) => res.json())
-      .then(({ row, col }) => {
-        // apply AI move to board
-        console.log("AI move:", row, col);
-        update_cell(board, row, col, "B", ROWS, COLS, update_board, setExplodingCells, red_cell_count, blue_cell_count, set_red_cell_count, set_blue_cell_count)
-          .then((is_game_over) => {
-            if (is_game_over) {
-              setTimeout(() => set_winner("AI"), 400);
-            }
-            switch_player();
-            set_disabled(false);
-          });
+    const timer = setTimeout(() => {
+      fetch("http://localhost:8080/ai-move", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          "cells": board,
+          "difficulty": props.ai_difficulty || 1
+        }),
       })
-      .catch((err) => {
-        console.error("AI move error:", err);
-        set_current_player("Human");
-        set_disabled(false);
-      });
+        .then((res) => res.json())
+        .then(({ row, col }) => {
+          console.log("AI move:", row, col);
+          
+          // Apply AI move to board
+          return update_cell(
+            board, 
+            row, 
+            col, 
+            "B", 
+            ROWS, 
+            COLS, 
+            update_board, 
+            setExplodingCells, 
+            red_cell_count, 
+            blue_cell_count, 
+            set_red_cell_count, 
+            set_blue_cell_count
+          );
+        })
+        .then((is_game_over) => {
+          if (is_game_over) {
+            setTimeout(() => set_winner("B"), 400);
+          } else {
+            // Switch back to human player and enable board
+            set_current_player("R");
+          }
+          set_disabled(false);
+        })
+        .catch((err) => {
+          console.error("AI move error:", err);
+          // On error, switch back to human and enable board
+          set_current_player("R");
+          set_disabled(false);
+        });
+    }, 1000);
 
-      }, 1000);
-
-      return () => clearTimeout(timer); // Cleanup the timer on component unmount or when current_player changes
+    return () => clearTimeout(timer);
   }
-}, [current_player]);
+}, [current_player, board, props.version, props.ai_difficulty, winner, ROWS, COLS, red_cell_count, blue_cell_count]);
 
 
 

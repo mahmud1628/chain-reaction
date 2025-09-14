@@ -21,7 +21,7 @@ const Winner = (props) => {
             {winning_message()}
           </h2>
           <div className="winner-buttons">
-            <Link to={props.version === "ai" ? "/game/ai" : "/twoplayer"} className="winner-btn" onClick={() => props.set_game_id((prev) => prev + 1)}>
+            <Link to={props.version === "ai" ? "/grid-size/ai" : "/grid-size/twoplayer"} className="winner-btn" onClick={() => props.set_game_id((prev) => prev + 1)}>
               Play Again
             </Link>
             <Link to="/" className="winner-btn">
